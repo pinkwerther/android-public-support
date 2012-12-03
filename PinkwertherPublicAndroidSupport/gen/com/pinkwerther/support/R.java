@@ -15,6 +15,10 @@ public final class R {
     }
     public static final class string {
         public static int app_name=0x7f030000;
+        public static int license_contact=0x7f030002;
+        public static int license_retry=0x7f030003;
+        public static int loading=0x7f030004;
+        public static int support_mail=0x7f030001;
     }
     public static final class style {
         /** 

@@ -2,4 +2,9 @@
 
     <string name="app_name">Pinkwerther Public Android Support</string>
 
+    <string name="support_mail">mail@pinkwerther.com</string>
+    <string name="license_contact">Would you like to file a report on this licensing issue?</string>
+    <string name="license_retry">License evaluation failed. Retry?</string>
+    <string name="loading">Loading. Please wait&#8230;</string>
+    
 </resources>
