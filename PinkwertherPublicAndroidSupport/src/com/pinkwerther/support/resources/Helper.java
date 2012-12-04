@@ -3,10 +3,34 @@ package com.pinkwerther.support.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pinkwerther.support.R;
+import com.pinkwerther.support.R.string;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
 public class Helper {
+
+	public final static void sendMail(Context context, int mailId, int subjectId, String text) {
+		sendMail(context,context.getString(mailId),context.getString(subjectId),text);
+	}
+	public final static void sendMail(Context context, int mailId, String subject, String text) {
+		sendMail(context,context.getString(mailId),subject,text);
+	}
+	public final static void sendMail(Context context, String mailadress, String subject, String text) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("message/rfc822");
+		intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mailadress});
+		intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+		intent.putExtra(Intent.EXTRA_TEXT, text);
+		try {
+			context.startActivity(Intent.createChooser(intent, context.getString(R.string.sendmail)));
+		} catch (android.content.ActivityNotFoundException e) {
+			Toast.makeText(context, R.string.nomailclients, Toast.LENGTH_SHORT).show();
+		}
+	}
 	
 	private final static String getSep(int index) {
 		return "<&#"+index+";>";

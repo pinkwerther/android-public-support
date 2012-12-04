@@ -4,37 +4,120 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.pinkwerther.support.activities.PinkwertherActivityInterface;
-import com.pinkwerther.support.ads.PinkwertherAdsInterface;
+import com.pinkwerther.support.ads.PinkwertherAds;
+import com.pinkwerther.support.fragment.PinkwertherSubstantialFragment;
 import com.pinkwerther.support.license.PinkwertherLicenseInterface;
 import com.pinkwerther.support.resources.PinkwertherResourceManager;
 import com.pinkwerther.support.tracking.PinkwertherTrackingInterface;
 import com.pinkwerther.support.tracking.TrackingEvent;
 
-public class PinkwertherSupport {
+public class PinkwertherSupport extends Fragment {
 	public final static String TAG = "PinkwertherSupportFragment";
 	
 	public boolean DEVEL() {
 		return PinkwertherActivityInterface.DEVEL;
 	}
 	
-	public Activity getActivity() {
-		return (Activity) mPinkwertherActivity;
+	@Override
+	public void onAttach(Activity activity) {
+		if (activity instanceof PinkwertherActivityInterface)
+			mPinkwertherActivity = (PinkwertherActivityInterface)activity;
+		super.onAttach(activity);
+	}
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		if (savedInstanceState != null) {
+			ArrayList<String> subs = savedInstanceState.getStringArrayList("mSubFrags");
+			for (String name : subs) {
+				try {
+					mSubFrags.add((PinkwertherSubstantialFragment)Class.forName(name).newInstance());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		if (mPinkwertherActivity == null) {
+			if (getActivity() instanceof PinkwertherActivityInterface)
+				mPinkwertherActivity = (PinkwertherActivityInterface)getActivity();
+			else
+				return;
+		}
+		super.onCreate(savedInstanceState);
+	}	
+	
+	@Override
+	public void onSaveInstanceState(Bundle bundle) {
+		ArrayList<String> subs = new ArrayList<String>();
+		for (PinkwertherSubstantialFragment pwFrag : mSubFrags) {
+			subs.add(pwFrag.getClass().getCanonicalName());
+		}
+		bundle.putStringArrayList("mSubFrags", subs);
+		super.onSaveInstanceState(bundle);
 	}
 	
-	public void init(PinkwertherActivityInterface pw) {
-		mPinkwertherActivity = pw;
+	ArrayList<PinkwertherSubstantialFragment> mSubFrags = new ArrayList<PinkwertherSubstantialFragment>();
+	public void replaceMainFragment(PinkwertherSubstantialFragment pwFrag, boolean backstacked) {
+		FragmentManager fm = mPinkwertherActivity.getSupportFragmentManager();
+		if (backstacked)
+			mSubFrags.add((PinkwertherSubstantialFragment)fm.findFragmentById(R.id.main));
+		fm.beginTransaction().replace(R.id.main, pwFrag).commit();
+	}
+	private boolean mCancelableByBackPress=true;
+	public void setCancelOnFinalBackPress(boolean cancel) {
+		mCancelableByBackPress = cancel;
+	}
+	public void backPressed() {
+		if (mSubFrags.isEmpty()) {
+			if (mCancelableByBackPress)
+				mPinkwertherActivity.finishPinkwertherActivity();
+			return;
+		}
+		PinkwertherSubstantialFragment pwFrag = mSubFrags.remove(mSubFrags.size()-1);
+		mPinkwertherActivity.getSupportFragmentManager().beginTransaction().
+			replace(R.id.main, pwFrag).commit();
+	}
+	
+	private boolean mInitialized = false;
+	public boolean initialized() {
+		return mInitialized;
+	}
+	
+	ArrayList<OnFinishedListener> mInitListeners = new ArrayList<OnFinishedListener>();
+	public void addOnInitializedListener(OnFinishedListener listener) {
+		if (mInitialized)
+			listener.finished();
+		else 
+			mInitListeners.add(listener);
+	}
+		
+	private void setInitialFragments() {
+		if (mSubstantialFragment == null) {
+			mSubstantialFragment = (PinkwertherSubstantialFragment)mPinkwertherActivity.getSupportFragmentManager().
+					findFragmentById(R.id.main);
+			if (mSubstantialFragment == null) {
+				mSubstantialFragment = mPinkwertherActivity.getInitialMainFragment();
+				mPinkwertherActivity.getSupportFragmentManager().
+					beginTransaction().add(R.id.advertisement, mSubstantialFragment).commit();
+			}
+		}
+	}
+	
+	public void onStart() {
+		
 		mHandler = new Handler();
 		mRM = mPinkwertherActivity.getPinkwertherResourceManager();
 		mLicense = mPinkwertherActivity.getPinkwertherLicense();
-		mAds = mPinkwertherActivity.getPinkwertherAds();
 		mTracking = mPinkwertherActivity.getPinkwertherTracking();
+		mAds = mPinkwertherActivity.getPinkwertherAds();
+		
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
@@ -43,33 +126,24 @@ public class PinkwertherSupport {
 				if (mRM != null)
 					mRM.init(PinkwertherSupport.this);
 				
-				if (mAds != null) {
+				if (mAds != null)
 					mAds.init(PinkwertherSupport.this);
-/*
-					mHandler.post(new Runnable(){
-						@Override
-						public void run() {
-*/
-							Fragment ads = mAds.getFragment();
-							if (ads != null)
-								mPinkwertherActivity.setAdFragment(ads);
-							else
-								mPinkwertherActivity.setAdView(mAds.getView());
-/*
-						}
-					});
-*/
-				}
-				
+								
 				if (mLicense != null)
 					mLicense.init(PinkwertherSupport.this);
 				
 				if (mTracking != null)
 					mTracking.init(PinkwertherSupport.this);
 				
+				setInitialFragments();
+				
 				showLoadingBar(false);
 				
+				mInitialized = true;
 				mPinkwertherActivity.onFinishedInitialization();
+				for (OnFinishedListener listener : mInitListeners)
+					listener.finished();
+				mInitListeners.clear();
 			}
 		}).run();
 	}
@@ -159,27 +233,11 @@ public class PinkwertherSupport {
 	}
 	
 	private PinkwertherResourceManager mRM;
-	private PinkwertherAdsInterface mAds;
+	private PinkwertherAds mAds;
 	private PinkwertherLicenseInterface mLicense;
 	private PinkwertherTrackingInterface mTracking;
-	
-	public boolean addFragment(Object object, String tag) {
-		if ( !(object instanceof Fragment) )
-			return false;
-		Fragment fragment = (Fragment) object;
-		FragmentManager fm = null;
-		if (mPinkwertherActivity instanceof FragmentActivity) {
-			fm = ((FragmentActivity)mPinkwertherActivity).getSupportFragmentManager();
-		} else if (mPinkwertherActivity instanceof FragmentActivity) {
-			fm = ((FragmentActivity)mPinkwertherActivity).getSupportFragmentManager();
-		}
-		if (fm != null) {
-			fm.beginTransaction().add(fragment, tag).commitAllowingStateLoss();
-			return true;
-		} else
-			return false;
-	}
-	
+	private PinkwertherSubstantialFragment mSubstantialFragment;
+		
 	public void trackStuff(boolean doTracking) {
 		if (doTracking && mTracking==null)
 			mTracking = mPinkwertherActivity.getPinkwertherTracking();
@@ -202,8 +260,8 @@ public class PinkwertherSupport {
 		else
 			return false;
 	}
-	
-	public void destroy() {
+	@Override
+	public void onDestroy() {
 		if (mRM != null)
 			mRM.destroy();
 		if (mAds != null)
@@ -212,6 +270,11 @@ public class PinkwertherSupport {
 			mLicense.destroy();
 		if (mTracking != null)
 			mTracking.destroy();
+		mRM = null;
+		mAds = null;
+		mLicense = null;
+		mTracking = null;
+		super.onDestroy();
 	}
 	
 }

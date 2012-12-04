@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_word">DEFAULT</string>
+    <string name="default_title">A DEFAULT Title</string>
+    <string name="default_sentence">This sentence consists of DEFAULT words.</string>
+    <string name="default_paragraph">
+        A paragraph of DEFAULT. By writing nonsense and stating nonsense we arrive at
+        DEFAULT values. Sentences filled with nothing but nothing meaningful.
+        Every beginning has an end, every DEFAULT too.
+    </string>
+</resources>

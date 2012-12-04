@@ -13,12 +13,32 @@ public final class R {
     public static final class drawable {
         public static int ic_launcher=0x7f020000;
     }
+    public static final class id {
+        public static int advertisement=0x7f060003;
+        public static int main=0x7f060002;
+        public static int pwIcon=0x7f060000;
+        public static int textView1=0x7f060001;
+    }
+    public static final class layout {
+        public static int default_main_ad=0x7f030000;
+        public static int vertical_adbottom=0x7f030001;
+        public static int vertical_adtop=0x7f030002;
+    }
     public static final class string {
-        public static int app_name=0x7f030000;
-        public static int license_contact=0x7f030002;
-        public static int license_retry=0x7f030003;
-        public static int loading=0x7f030004;
-        public static int support_mail=0x7f030001;
+        public static int app_name=0x7f040004;
+        public static int default_paragraph=0x7f040003;
+        public static int default_sentence=0x7f040002;
+        public static int default_title=0x7f040001;
+        public static int default_word=0x7f040000;
+        public static int license_contact=0x7f040007;
+        public static int license_failed_subject=0x7f040006;
+        public static int license_retry=0x7f040008;
+        public static int loading=0x7f040009;
+        public static int nomailclients=0x7f04000b;
+        public static int pwdefaulttext=0x7f04000d;
+        public static int pwicon=0x7f04000c;
+        public static int sendmail=0x7f04000a;
+        public static int support_mail=0x7f040005;
     }
     public static final class style {
         /** 
@@ -42,10 +62,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static int AppBaseTheme=0x7f040000;
+        public static int AppBaseTheme=0x7f050000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static int AppTheme=0x7f040001;
+        public static int AppTheme=0x7f050001;
     }
 }

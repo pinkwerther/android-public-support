@@ -10,21 +10,23 @@ import java.util.UUID;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Handler;
 
 import com.pinkwerther.support.PinkwertherSupport;
 import com.pinkwerther.support.R;
+import com.pinkwerther.support.resources.Helper;
 
 
 public abstract class PinkwertherLicense implements PinkwertherLicenseInterface {
     public final static int
-    	LICENSE_NOT_INITIALIZED=0,
+    	LICENSE_NOTINITIALIZED=0,
     	LICENSE_APPROVED=1,
     	LICENSE_DENIED=2,
     	LICENSE_DELAYED=3,
     	LICENSE_DEVELVERSION=4;
-    protected int mLicenseCheck=LICENSE_NOT_INITIALIZED;
-        
+    protected int mLicenseCheck=LICENSE_NOTINITIALIZED;
+            
     PinkwertherSupport mSupport;
 	public void init(PinkwertherSupport support) {
 		this.mSupport = support;
@@ -40,6 +42,7 @@ public abstract class PinkwertherLicense implements PinkwertherLicenseInterface 
 	ArrayList<String> checkList = new ArrayList<String>();
 	public String getMessage() {
 		StringBuffer ret = new StringBuffer();
+		ret.append("api: "+Build.VERSION.SDK_INT+"\n");
 		for (String string : checkList) {
 			ret.append("\n"+string);
 		}
@@ -52,6 +55,7 @@ public abstract class PinkwertherLicense implements PinkwertherLicenseInterface 
 			public void run() {
 				int check = licenseCheck();
 				checkList.add("check = "+check);
+				checkList.add("time: "+System.currentTimeMillis());
 				if (check == LICENSE_DENIED)
 					licenseRetryDialog();
 			}
@@ -100,8 +104,11 @@ public abstract class PinkwertherLicense implements PinkwertherLicenseInterface 
     
     int count=0;
     protected void licenseRetryDialog() {
-    	if (count>4)
+    	if (count>4) {
+    		changeLicense(LICENSE_DENIED);
     		contactOnLicenseFailDialog();
+    		return;
+    	}
     	count++;
     	try {
     		mSupport.getHandler().post(new Runnable() {
@@ -112,7 +119,7 @@ public abstract class PinkwertherLicense implements PinkwertherLicenseInterface 
     					public void onClick(DialogInterface dialog, int which) {
     						switch (which){
     						case DialogInterface.BUTTON_POSITIVE:
-    							changeLicense(LICENSE_NOT_INITIALIZED);
+    							changeLicense(LICENSE_NOTINITIALIZED);
     							licenseCheckInBackground();
     							break;
 
@@ -161,9 +168,16 @@ public abstract class PinkwertherLicense implements PinkwertherLicenseInterface 
     					public void onClick(DialogInterface dialog, int which) {
     						switch (which){
     						case DialogInterface.BUTTON_POSITIVE:
+    							Context context = mSupport.getActivity();
+    							
+    							Helper.sendMail(context, R.string.support_mail, 
+    									context.getApplicationInfo().packageName+": "+context.getString(R.string.license_failed_subject),
+    									getMessage());
+    							dialog.cancel();
     							break;
 
     						case DialogInterface.BUTTON_NEGATIVE:
+    							dialog.cancel();
     							break;
     						}
     					}
