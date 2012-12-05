@@ -3,13 +3,12 @@ package com.pinkwerther.support.resources;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pinkwerther.support.R;
-import com.pinkwerther.support.R.string;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
+
+import com.pinkwerther.support.R;
 
 public class Helper {
 

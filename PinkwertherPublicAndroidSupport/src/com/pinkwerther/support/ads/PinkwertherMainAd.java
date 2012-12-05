@@ -16,6 +16,8 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 
 import com.pinkwerther.support.R;
+import com.pinkwerther.support.activities.PinkwertherActivityInterface;
+import com.pinkwerther.support.tracking.TrackingEvent;
 
 public class PinkwertherMainAd extends Fragment implements OnClickListener {
 	View pwIcon=null;
@@ -30,6 +32,10 @@ public class PinkwertherMainAd extends Fragment implements OnClickListener {
 	public void onClick(View arg0) {
 		clicked = true;
 		getActivity().setProgressBarIndeterminateVisibility(true);
+		if (getActivity() instanceof PinkwertherActivityInterface) {
+			((PinkwertherActivityInterface)getActivity()).getPinkwertherSupport().track(
+					new TrackingEvent("click","main ad",this.getClass().getSimpleName(),1));
+		}
 		try {
 			startActivityForResult(
 					new Intent(Intent.ACTION_VIEW, 

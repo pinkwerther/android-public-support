@@ -14,7 +14,9 @@ public final class R {
         public static int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static int advertisement=0x7f060003;
+        public static int ad_frame=0x7f060003;
+        public static int advertisement=0x7f060004;
+        public static int commercial=0x7f060005;
         public static int main=0x7f060002;
         public static int pwIcon=0x7f060000;
         public static int textView1=0x7f060001;

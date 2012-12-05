@@ -1,6 +1,8 @@
 package com.pinkwerther.support.ads;
 
 import com.pinkwerther.support.R;
+import com.pinkwerther.support.activities.PinkwertherActivityInterface;
+import com.pinkwerther.support.tracking.TrackingEvent;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -67,11 +69,25 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 	static int currentnum=1;
-	public void clickForFullScreen() {
-		currentnum = number;
-		PinkwertherAdActivity.start(getActivity(), PinkwertherMainAd.class, PinkwertherBanner.class);
+	@SuppressWarnings("rawtypes")
+	public Class getFollowUpMainAd() {
+		return PinkwertherMainAd.class;
 	}
-	public void clickForLinkRedirection() {
+	@SuppressWarnings("rawtypes")
+	public Class getFollowUpBanner() {
+		return this.getClass();
+	}
+	@SuppressWarnings("rawtypes")
+	private void clickForFullScreen() {
+		currentnum = number;
+		Class main = getFollowUpMainAd();
+		Class banner = getFollowUpBanner();
+		if (main != null || banner != null)
+			PinkwertherAdActivity.start(getActivity(), main, banner);
+		else
+			clickForLinkRedirection();
+	}
+	private void clickForLinkRedirection() {
 		getActivity().setProgressBarIndeterminateVisibility(true);
 		try {
 			startActivityForResult(
@@ -88,8 +104,16 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		if ( ! (getActivity() instanceof PinkwertherAdActivity)) {
+			if (getActivity() instanceof PinkwertherActivityInterface) {
+				((PinkwertherActivityInterface)getActivity()).getPinkwertherSupport().track(
+						new TrackingEvent("click","banner for fullscreen",this.getClass().getSimpleName(),1));
+			}
 			clickForFullScreen();
 		} else {
+			if (getActivity() instanceof PinkwertherActivityInterface) {
+				((PinkwertherActivityInterface)getActivity()).getPinkwertherSupport().track(
+						new TrackingEvent("click","banner for redirection",this.getClass().getSimpleName(),1));
+			}
 			clickForLinkRedirection();
 		}
 	}
