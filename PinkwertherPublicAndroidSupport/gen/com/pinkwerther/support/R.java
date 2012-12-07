@@ -14,17 +14,19 @@ public final class R {
         public static int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static int ad_frame=0x7f060003;
-        public static int advertisement=0x7f060004;
-        public static int commercial=0x7f060005;
-        public static int main=0x7f060002;
-        public static int pwIcon=0x7f060000;
-        public static int textView1=0x7f060001;
+        public static int ad_frame=0x7f060004;
+        public static int ad_pager=0x7f060000;
+        public static int advertisement=0x7f060005;
+        public static int commercial=0x7f060006;
+        public static int main=0x7f060003;
+        public static int pwIcon=0x7f060001;
+        public static int textView1=0x7f060002;
     }
     public static final class layout {
-        public static int default_main_ad=0x7f030000;
-        public static int vertical_adbottom=0x7f030001;
-        public static int vertical_adtop=0x7f030002;
+        public static int default_main=0x7f030000;
+        public static int default_main_ad=0x7f030001;
+        public static int vertical_adbottom=0x7f030002;
+        public static int vertical_adtop=0x7f030003;
     }
     public static final class string {
         public static int app_name=0x7f040004;

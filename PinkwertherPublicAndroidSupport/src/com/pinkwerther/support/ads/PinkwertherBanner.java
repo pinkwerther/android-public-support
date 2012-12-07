@@ -1,9 +1,5 @@
 package com.pinkwerther.support.ads;
 
-import com.pinkwerther.support.R;
-import com.pinkwerther.support.activities.PinkwertherActivityInterface;
-import com.pinkwerther.support.tracking.TrackingEvent;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.pinkwerther.support.R;
+import com.pinkwerther.support.activities.PinkwertherActivityInterface;
+import com.pinkwerther.support.tracking.TrackingEvent;
 
 public class PinkwertherBanner extends Fragment implements OnClickListener{
 	public int number = 0;
@@ -47,6 +49,7 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 		for (int i=0; i<number; i++) {
 			ImageView iv = new ImageView(getActivity());
 			iv.setImageResource(R.drawable.ic_launcher);
+			AnimationSet animation = new AnimationSet(false);
 			RotateAnimation rotate;
 			if (Math.random()>.5)
 				rotate = new RotateAnimation(0f,360f,RotateAnimation.RELATIVE_TO_SELF,.5f,RotateAnimation.RELATIVE_TO_SELF,.5f);
@@ -56,11 +59,15 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 			rotate.setRepeatCount(RotateAnimation.INFINITE);
 			rotate.setRepeatMode(RotateAnimation.RESTART);
 			rotate.setInterpolator(AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear));
+			animation.addAnimation(rotate);
+			Animation fadein = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
+			if (i-1==number)
+				animation.addAnimation(fadein);
 			line.addView(iv);
-			iv.startAnimation(rotate);
+			iv.startAnimation(animation);
 			iv.setOnClickListener(this);
 		}
-		return super.onCreateView(inflater, container, savedInstanceState);
+		return line;
 	}
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -1,5 +1,9 @@
 package com.pinkwerther.support.activities;
 
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Window;
+
 import com.pinkwerther.support.PinkwertherSupport;
 import com.pinkwerther.support.R;
 import com.pinkwerther.support.ads.PinkwertherAds;
@@ -8,10 +12,6 @@ import com.pinkwerther.support.license.PinkwertherLicenseInterface;
 import com.pinkwerther.support.resources.PinkwertherResourceManager;
 import com.pinkwerther.support.tracking.PinkwertherShellTracking;
 import com.pinkwerther.support.tracking.PinkwertherTrackingInterface;
-
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.Window;
 
 public class PinkwertherFragmentActivity extends FragmentActivity implements PinkwertherActivityInterface {
 
@@ -41,25 +41,26 @@ public class PinkwertherFragmentActivity extends FragmentActivity implements Pin
 	protected void onCreate(Bundle arg0) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.vertical_adbottom);
-		getSupportFragmentManager().beginTransaction().
-			add(getPinkwertherSupport(), "PinkwertherSupport").commit();
 		super.onCreate(arg0);
+		if (arg0 == null)
+			getSupportFragmentManager().beginTransaction().
+				add(getPinkwertherSupport(), "PinkwertherSupport").commit();
 	}
 
 	@Override
 	public PinkwertherResourceManager getPinkwertherResourceManager() {
-		// TODO Auto-generated method stub
+		//TODO
 		return null;
 	}
 
 	@Override
 	public PinkwertherAds getPinkwertherAds() {
-		// TODO Auto-generated method stub
-		return null;
+		return new PinkwertherAds();
 	}
 
 	@Override
 	public PinkwertherLicenseInterface getPinkwertherLicense() {
+		//TODO
 		return null;
 	}
 
@@ -70,12 +71,12 @@ public class PinkwertherFragmentActivity extends FragmentActivity implements Pin
 
 	@Override
 	public void onFinishedInitialization() {
+		//TODO
 	}
 
 	@Override
 	public PinkwertherSubstantialFragment getInitialMainFragment() {
-		// TODO Auto-generated method stub
-		return null;
+		return new PinkwertherSubstantialFragment();
 	}
 
 	@Override

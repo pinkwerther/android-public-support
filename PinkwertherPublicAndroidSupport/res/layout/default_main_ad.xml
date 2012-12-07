@@ -3,15 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageView
-        android:id="@+id/pwIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/pwicon"
-        android:src="@drawable/ic_launcher" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -23,4 +14,13 @@
         android:text="@string/pwdefaulttext"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <ImageView
+        android:id="@+id/pwIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/pwicon"
+        android:src="@drawable/ic_launcher" />
+    
 </RelativeLayout>

@@ -25,6 +25,10 @@ public class PinkwertherSupport extends Fragment {
 		return PinkwertherActivityInterface.DEVEL;
 	}
 	
+	public FragmentManager getSupportFragmentManager() {
+		return mPinkwertherActivity.getSupportFragmentManager();
+	}
+	
 	@Override
 	public void onAttach(Activity activity) {
 		if (activity instanceof PinkwertherActivityInterface)
@@ -96,26 +100,29 @@ public class PinkwertherSupport extends Fragment {
 		else 
 			mInitListeners.add(listener);
 	}
-		
-	private void setInitialFragments() {
-		if (mSubstantialFragment == null) {
-			mSubstantialFragment = (PinkwertherSubstantialFragment)mPinkwertherActivity.getSupportFragmentManager().
-					findFragmentById(R.id.main);
-			if (mSubstantialFragment == null) {
-				mSubstantialFragment = mPinkwertherActivity.getInitialMainFragment();
-				mPinkwertherActivity.getSupportFragmentManager().
-					beginTransaction().add(R.id.advertisement, mSubstantialFragment).commit();
-			}
-		}
-	}
+	
+	private boolean stillRunning = false;
 	
 	public void onStart() {
+		
+		super.onStart();
+		
+		if (stillRunning) {
+			mSubstantialFragment = (PinkwertherSubstantialFragment)getFragmentManager().findFragmentById(R.id.main);
+			return;
+		} else
+			stillRunning = true;
 		
 		mHandler = new Handler();
 		mRM = mPinkwertherActivity.getPinkwertherResourceManager();
 		mLicense = mPinkwertherActivity.getPinkwertherLicense();
 		mTracking = mPinkwertherActivity.getPinkwertherTracking();
 		mAds = mPinkwertherActivity.getPinkwertherAds();
+
+		mSubstantialFragment = mPinkwertherActivity.getInitialMainFragment();
+		if (mSubstantialFragment != null)
+			mPinkwertherActivity.getSupportFragmentManager().
+				beginTransaction().add(R.id.main, mSubstantialFragment).commit();
 		
 		new Thread(new Runnable(){
 			@Override
@@ -134,9 +141,8 @@ public class PinkwertherSupport extends Fragment {
 				if (mTracking != null)
 					mTracking.init(PinkwertherSupport.this);
 				
-				setInitialFragments();
-				
 				showLoadingBar(false);
+
 				
 				mInitialized = true;
 				mPinkwertherActivity.onFinishedInitialization();

@@ -23,20 +23,20 @@ public class PinkwertherAds implements PinkwertherSubstantialInterface {
 	public void init(final PinkwertherSupport pwSupport) {
 		final Fragment ads = getDefaultBanner();
 		if (ads != null)
-			pwSupport.getFragmentManager().beginTransaction().add(R.id.advertisement,ads).commit();
+			pwSupport.getSupportFragmentManager().beginTransaction().add(R.id.advertisement,ads).commit();
 		final PinkwertherCommercialBanner com = getCommercialBanner();
-		com.setOnInitializedListener(new OnFinishedListener() {
-			@Override
-			public void finished() {
-				pwSupport.getFragmentManager().beginTransaction().remove(ads).commit();
-			}
-		});
 		if (com != null) {
+			com.setOnInitializedListener(new OnFinishedListener() {
+				@Override
+				public void finished() {
+					pwSupport.getSupportFragmentManager().beginTransaction().remove(ads).commit();
+				}
+			});
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					pwSupport.getFragmentManager().beginTransaction().add(R.id.commercial, com).commit();
+					pwSupport.getSupportFragmentManager().beginTransaction().add(R.id.commercial, com).commit();
 				}
 			}, getCommercialWaitTime());
 		}

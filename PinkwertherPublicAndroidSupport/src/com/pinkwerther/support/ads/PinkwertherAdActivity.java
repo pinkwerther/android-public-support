@@ -18,6 +18,7 @@ public class PinkwertherAdActivity extends FragmentActivity {
 		Bundle bundle = getIntent().getExtras();
 		String main = bundle.getString(MAIN_FRAGMENT);
 		String ad = bundle.getString(AD_FRAGMENT);
+		super.onCreate(arg0);
 		FragmentManager fm = getSupportFragmentManager();
 		if (main != null)
 			try {
@@ -33,7 +34,6 @@ public class PinkwertherAdActivity extends FragmentActivity {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		super.onCreate(arg0);
 	}
 	@SuppressWarnings("rawtypes")
 	public static void start(Context context, Class main, Class ad) {
