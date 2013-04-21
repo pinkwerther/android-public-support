@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 
 import com.pinkwerther.support.PinkwertherSupport;
@@ -26,9 +27,15 @@ public abstract class PinkwertherLicense implements PinkwertherLicenseInterface 
     	LICENSE_DELAYED=3,
     	LICENSE_DEVELVERSION=4;
     protected int mLicenseCheck=LICENSE_NOTINITIALIZED;
+    
+    public final static String
+    	PERMISSION_NO_ADS="permission no ads";
             
     PinkwertherSupport mSupport;
-	public void init(PinkwertherSupport support) {
+    public Bundle getRecreationArguments() {
+    	return null;
+    }
+	public void init(PinkwertherSupport support, Bundle bundle) {
 		this.mSupport = support;
 		if (this instanceof OnLicenseChangeListener)
 			addOnLicenseChangedListener((OnLicenseChangeListener)this);

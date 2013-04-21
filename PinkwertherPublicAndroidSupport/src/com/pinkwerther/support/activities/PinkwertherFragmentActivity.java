@@ -20,7 +20,7 @@ public class PinkwertherFragmentActivity extends FragmentActivity implements Pin
 		return "PinkwertherFragmentActivity";
 	}
 	
-	PinkwertherSupport pwSupport;
+	public PinkwertherSupport pwSupport;
 
 	@Override
 	public PinkwertherSupport getPinkwertherSupport() {
@@ -42,9 +42,15 @@ public class PinkwertherFragmentActivity extends FragmentActivity implements Pin
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.vertical_adbottom);
 		super.onCreate(arg0);
+		pwSupport = getPinkwertherSupport();
 		if (arg0 == null)
 			getSupportFragmentManager().beginTransaction().
-				add(getPinkwertherSupport(), "PinkwertherSupport").commit();
+				add(pwSupport, "PinkwertherSupport").commit();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		pwSupport.backPressed();
 	}
 
 	@Override

@@ -35,17 +35,26 @@ public class PinkwertherSupport extends Fragment {
 			mPinkwertherActivity = (PinkwertherActivityInterface)activity;
 		super.onAttach(activity);
 	}
+		
+	private final static String
+		RM_BUNDLE="RMBundle",
+		TRACKING_BUNDLE="TrackingBundle",
+		LICENSE_BUNDLE="LicenseBundle",
+		ADS_BUNDLE="AdsBundle";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		if (savedInstanceState != null) {
-			ArrayList<String> subs = savedInstanceState.getStringArrayList("mSubFrags");
-			for (String name : subs) {
-				try {
-					mSubFrags.add((PinkwertherSubstantialFragment)Class.forName(name).newInstance());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			int i=0;
+			Bundle bundle=savedInstanceState.getBundle(PW_SUB_BUNDLE+i);
+			while (bundle != null) {
+				mSubBundles.add(bundle);
+				i++;
+				bundle = savedInstanceState.getBundle(PW_SUB_BUNDLE+i);
 			}
+			RMBundle = savedInstanceState.getBundle(RM_BUNDLE);
+			TrackingBundle = savedInstanceState.getBundle(TRACKING_BUNDLE);
+			LicenseBundle = savedInstanceState.getBundle(LICENSE_BUNDLE);
+			AdsBundle = savedInstanceState.getBundle(ADS_BUNDLE);
 		}
 		if (mPinkwertherActivity == null) {
 			if (getActivity() instanceof PinkwertherActivityInterface)
@@ -54,23 +63,38 @@ public class PinkwertherSupport extends Fragment {
 				return;
 		}
 		super.onCreate(savedInstanceState);
-	}	
-	
+	}
+		
 	@Override
 	public void onSaveInstanceState(Bundle bundle) {
-		ArrayList<String> subs = new ArrayList<String>();
-		for (PinkwertherSubstantialFragment pwFrag : mSubFrags) {
-			subs.add(pwFrag.getClass().getCanonicalName());
+		if (mSubBundles.size() > 0) {
+			for (int i=0; i<mSubBundles.size(); i++) {
+				bundle.putBundle(PW_SUB_BUNDLE+i, mSubBundles.get(i));
+			}
 		}
-		bundle.putStringArrayList("mSubFrags", subs);
+		if (mRM != null)
+			bundle.putBundle(RM_BUNDLE, mRM.getRecreationArguments());
+		if (mTracking != null)
+			bundle.putBundle(TRACKING_BUNDLE, mTracking.getRecreationArguments());
+		if (mLicense != null)
+			bundle.putBundle(LICENSE_BUNDLE, mLicense.getRecreationArguments());
+		if (mAds != null)
+			bundle.putBundle(ADS_BUNDLE,mAds.getRecreationArguments());
+		
 		super.onSaveInstanceState(bundle);
 	}
 	
-	ArrayList<PinkwertherSubstantialFragment> mSubFrags = new ArrayList<PinkwertherSubstantialFragment>();
-	public void replaceMainFragment(PinkwertherSubstantialFragment pwFrag, boolean backstacked) {
+	private final static String PW_SUB_FRAG_CLASS_NAME="pwSubFragClassName";
+	private final static String PW_SUB_BUNDLE="pwSubBundle";
+	ArrayList<Bundle> mSubBundles = new ArrayList<Bundle>();
+	public void replaceMainFragment(Fragment pwFrag) {
 		FragmentManager fm = mPinkwertherActivity.getSupportFragmentManager();
-		if (backstacked)
-			mSubFrags.add((PinkwertherSubstantialFragment)fm.findFragmentById(R.id.main));
+		PinkwertherSubstantialFragment pwSub = (PinkwertherSubstantialFragment)fm.findFragmentById(R.id.main);
+		if (pwSub != null && pwSub.isBackWorthy()) {
+			Bundle bundle = pwSub.getRecreationArguments();
+			bundle.putString(PW_SUB_FRAG_CLASS_NAME, pwSub.getClass().getCanonicalName());
+			mSubBundles.add(bundle);
+		}
 		fm.beginTransaction().replace(R.id.main, pwFrag).commit();
 	}
 	private boolean mCancelableByBackPress=true;
@@ -78,12 +102,20 @@ public class PinkwertherSupport extends Fragment {
 		mCancelableByBackPress = cancel;
 	}
 	public void backPressed() {
-		if (mSubFrags.isEmpty()) {
+		if (mSubBundles.isEmpty()) {
 			if (mCancelableByBackPress)
 				mPinkwertherActivity.finishPinkwertherActivity();
 			return;
 		}
-		PinkwertherSubstantialFragment pwFrag = mSubFrags.remove(mSubFrags.size()-1);
+		Bundle bundle = mSubBundles.remove(mSubBundles.size()-1);
+		PinkwertherSubstantialFragment pwFrag;
+		try {
+			pwFrag = (PinkwertherSubstantialFragment) Class.forName(bundle.getString(PW_SUB_FRAG_CLASS_NAME)).newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		pwFrag.setArguments(bundle);
 		mPinkwertherActivity.getSupportFragmentManager().beginTransaction().
 			replace(R.id.main, pwFrag).commit();
 	}
@@ -102,6 +134,7 @@ public class PinkwertherSupport extends Fragment {
 	}
 	
 	private boolean stillRunning = false;
+	private Bundle RMBundle,AdsBundle,LicenseBundle,TrackingBundle;
 	
 	public void onStart() {
 		
@@ -122,35 +155,42 @@ public class PinkwertherSupport extends Fragment {
 		mSubstantialFragment = mPinkwertherActivity.getInitialMainFragment();
 		if (mSubstantialFragment != null)
 			mPinkwertherActivity.getSupportFragmentManager().
-				beginTransaction().add(R.id.main, mSubstantialFragment).commit();
-		
+				beginTransaction().replace(R.id.main, mSubstantialFragment).commit();
+
+		showLoadingBar(true);
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
-				showLoadingBar(true);
-				
-				if (mRM != null)
-					mRM.init(PinkwertherSupport.this);
 				
 				if (mAds != null)
-					mAds.init(PinkwertherSupport.this);
-								
+					mAds.init(PinkwertherSupport.this,AdsBundle);
+				AdsBundle = null;
+				
+				if (mRM != null)
+					mRM.init(PinkwertherSupport.this,RMBundle);
+				RMBundle = null;
+
 				if (mLicense != null)
-					mLicense.init(PinkwertherSupport.this);
+					mLicense.init(PinkwertherSupport.this,LicenseBundle);
+				LicenseBundle = null;
 				
 				if (mTracking != null)
-					mTracking.init(PinkwertherSupport.this);
-				
-				showLoadingBar(false);
-
+					mTracking.init(PinkwertherSupport.this,TrackingBundle);
+				TrackingBundle = null;
 				
 				mInitialized = true;
 				mPinkwertherActivity.onFinishedInitialization();
 				for (OnFinishedListener listener : mInitListeners)
 					listener.finished();
 				mInitListeners.clear();
+				mHandler.post(new Runnable() {
+					@Override
+					public void run() {
+						showLoadingBar(false);
+					}
+				});
 			}
-		}).run();
+		}).start();
 	}
 	
 	private PinkwertherActivityInterface mPinkwertherActivity;
@@ -197,7 +237,7 @@ public class PinkwertherSupport extends Fragment {
 				Log.e(TAG,name+" can not be removed from mLoadingBarCallers");
 		}
 		if (loading || mLoadingBarCallers.isEmpty()) {
-	    	mPinkwertherActivity.setSupportProgressBarIndeterminate(loading);
+	    	//mPinkwertherActivity.setSupportProgressBarIndeterminate(loading);
 			mPinkwertherActivity.setSupportProgressBarIndeterminateVisibility(loading);
 		}
 	}

@@ -1,4 +1,4 @@
-int drawable ic_launcher 0x7f020000
+int drawable pw_icon 0x7f020000
 int id ad_frame 0x7f060004
 int id ad_pager 0x7f060000
 int id advertisement 0x7f060005

@@ -43,6 +43,13 @@ public class PinkwertherSubstantialFragment extends Fragment {
 		bundle.putFloat("rotation", rotation);
 		super.onSaveInstanceState(bundle);
 	}
+	public Bundle getRecreationArguments() {
+		return getArguments();
+	}
+	
+	public boolean isBackWorthy() {
+		return false;
+	}
 	
 	private float x=0,y=0;
 	private float rotation=0;

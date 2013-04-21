@@ -48,7 +48,7 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 		line.setOrientation(LinearLayout.HORIZONTAL);
 		for (int i=0; i<number; i++) {
 			ImageView iv = new ImageView(getActivity());
-			iv.setImageResource(R.drawable.ic_launcher);
+			iv.setImageResource(R.drawable.pw_icon);
 			AnimationSet animation = new AnimationSet(false);
 			RotateAnimation rotate;
 			if (Math.random()>.5)
