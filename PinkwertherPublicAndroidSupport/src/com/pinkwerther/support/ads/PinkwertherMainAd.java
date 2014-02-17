@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.pinkwerther.support.R;
-import com.pinkwerther.support.activities.PinkwertherActivityInterface;
 import com.pinkwerther.support.fragment.PinkwertherSubstantialFragment;
-import com.pinkwerther.support.tracking.TrackingEvent;
 
 public class PinkwertherMainAd extends PinkwertherSubstantialFragment implements OnClickListener {
 
@@ -26,10 +24,6 @@ public class PinkwertherMainAd extends PinkwertherSubstantialFragment implements
 	@Override
 	public void onClick(View arg0) {
 		getActivity().setProgressBarIndeterminateVisibility(true);
-		if (getActivity() instanceof PinkwertherActivityInterface) {
-			((PinkwertherActivityInterface)getActivity()).getPinkwertherSupport().track(
-					new TrackingEvent("click","main ad",this.getClass().getSimpleName(),1));
-		}
 		try {
 			startActivityForResult(
 					new Intent(Intent.ACTION_VIEW, 

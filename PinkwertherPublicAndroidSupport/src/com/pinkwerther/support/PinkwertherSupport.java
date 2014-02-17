@@ -15,8 +15,6 @@ import com.pinkwerther.support.ads.PinkwertherAds;
 import com.pinkwerther.support.fragment.PinkwertherSubstantialFragment;
 import com.pinkwerther.support.license.PinkwertherLicenseInterface;
 import com.pinkwerther.support.resources.PinkwertherResourceManager;
-import com.pinkwerther.support.tracking.PinkwertherTrackingInterface;
-import com.pinkwerther.support.tracking.TrackingEvent;
 
 public class PinkwertherSupport extends Fragment {
 	public final static String TAG = "PinkwertherSupportFragment";
@@ -38,7 +36,6 @@ public class PinkwertherSupport extends Fragment {
 		
 	private final static String
 		RM_BUNDLE="RMBundle",
-		TRACKING_BUNDLE="TrackingBundle",
 		LICENSE_BUNDLE="LicenseBundle",
 		ADS_BUNDLE="AdsBundle";
 	@Override
@@ -52,7 +49,6 @@ public class PinkwertherSupport extends Fragment {
 				bundle = savedInstanceState.getBundle(PW_SUB_BUNDLE+i);
 			}
 			RMBundle = savedInstanceState.getBundle(RM_BUNDLE);
-			TrackingBundle = savedInstanceState.getBundle(TRACKING_BUNDLE);
 			LicenseBundle = savedInstanceState.getBundle(LICENSE_BUNDLE);
 			AdsBundle = savedInstanceState.getBundle(ADS_BUNDLE);
 		}
@@ -74,8 +70,6 @@ public class PinkwertherSupport extends Fragment {
 		}
 		if (mRM != null)
 			bundle.putBundle(RM_BUNDLE, mRM.getRecreationArguments());
-		if (mTracking != null)
-			bundle.putBundle(TRACKING_BUNDLE, mTracking.getRecreationArguments());
 		if (mLicense != null)
 			bundle.putBundle(LICENSE_BUNDLE, mLicense.getRecreationArguments());
 		if (mAds != null)
@@ -134,7 +128,7 @@ public class PinkwertherSupport extends Fragment {
 	}
 	
 	private boolean stillRunning = false;
-	private Bundle RMBundle,AdsBundle,LicenseBundle,TrackingBundle;
+	private Bundle RMBundle,AdsBundle,LicenseBundle;
 	
 	public void onStart() {
 		
@@ -149,7 +143,6 @@ public class PinkwertherSupport extends Fragment {
 		mHandler = new Handler();
 		mRM = mPinkwertherActivity.getPinkwertherResourceManager();
 		mLicense = mPinkwertherActivity.getPinkwertherLicense();
-		mTracking = mPinkwertherActivity.getPinkwertherTracking();
 		mAds = mPinkwertherActivity.getPinkwertherAds();
 
 		mSubstantialFragment = mPinkwertherActivity.getInitialMainFragment();
@@ -173,11 +166,7 @@ public class PinkwertherSupport extends Fragment {
 				if (mLicense != null)
 					mLicense.init(PinkwertherSupport.this,LicenseBundle);
 				LicenseBundle = null;
-				
-				if (mTracking != null)
-					mTracking.init(PinkwertherSupport.this,TrackingBundle);
-				TrackingBundle = null;
-				
+								
 				mInitialized = true;
 				mPinkwertherActivity.onFinishedInitialization();
 				for (OnFinishedListener listener : mInitListeners)
@@ -280,19 +269,8 @@ public class PinkwertherSupport extends Fragment {
 	private PinkwertherResourceManager mRM;
 	private PinkwertherAds mAds;
 	private PinkwertherLicenseInterface mLicense;
-	private PinkwertherTrackingInterface mTracking;
 	private PinkwertherSubstantialFragment mSubstantialFragment;
 		
-	public void trackStuff(boolean doTracking) {
-		if (doTracking && mTracking==null)
-			mTracking = mPinkwertherActivity.getPinkwertherTracking();
-	}
-	public void track(TrackingEvent event) {
-		if (mTracking != null) {
-			mTracking.track(event);
-		}
-	}
-	
 	public boolean hasPermission(int rights) {
 		if (mLicense != null)
 			return mLicense.hasPermission(rights);
@@ -313,12 +291,9 @@ public class PinkwertherSupport extends Fragment {
 			mAds.destroy();
 		if (mLicense != null)
 			mLicense.destroy();
-		if (mTracking != null)
-			mTracking.destroy();
 		mRM = null;
 		mAds = null;
 		mLicense = null;
-		mTracking = null;
 		super.onDestroy();
 	}
 	

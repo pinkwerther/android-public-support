@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.pinkwerther.support.R;
-import com.pinkwerther.support.activities.PinkwertherActivityInterface;
-import com.pinkwerther.support.tracking.TrackingEvent;
 
 public class PinkwertherBanner extends Fragment implements OnClickListener{
 	public int number = 0;
@@ -58,7 +56,11 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 			rotate.setDuration((long)(Math.random()*2000+202));
 			rotate.setRepeatCount(RotateAnimation.INFINITE);
 			rotate.setRepeatMode(RotateAnimation.RESTART);
-			rotate.setInterpolator(AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear));
+			try {
+				rotate.setInterpolator(AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear));
+			} catch (Exception e) {
+				//not very elegant
+			}
 			animation.addAnimation(rotate);
 			Animation fadein = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
 			if (i-1==number)
@@ -111,16 +113,8 @@ public class PinkwertherBanner extends Fragment implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		if ( ! (getActivity() instanceof PinkwertherAdActivity)) {
-			if (getActivity() instanceof PinkwertherActivityInterface) {
-				((PinkwertherActivityInterface)getActivity()).getPinkwertherSupport().track(
-						new TrackingEvent("click","banner for fullscreen",this.getClass().getSimpleName(),1));
-			}
 			clickForFullScreen();
 		} else {
-			if (getActivity() instanceof PinkwertherActivityInterface) {
-				((PinkwertherActivityInterface)getActivity()).getPinkwertherSupport().track(
-						new TrackingEvent("click","banner for redirection",this.getClass().getSimpleName(),1));
-			}
 			clickForLinkRedirection();
 		}
 	}

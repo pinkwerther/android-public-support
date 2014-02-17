@@ -7,7 +7,6 @@ import com.pinkwerther.support.ads.PinkwertherAds;
 import com.pinkwerther.support.fragment.PinkwertherSubstantialFragment;
 import com.pinkwerther.support.license.PinkwertherLicenseInterface;
 import com.pinkwerther.support.resources.PinkwertherResourceManager;
-import com.pinkwerther.support.tracking.PinkwertherTrackingInterface;
 
 
 public interface PinkwertherActivityInterface {
@@ -26,7 +25,6 @@ public interface PinkwertherActivityInterface {
 	public PinkwertherResourceManager getPinkwertherResourceManager();
 	public PinkwertherAds getPinkwertherAds();
 	public PinkwertherLicenseInterface getPinkwertherLicense();
-	public PinkwertherTrackingInterface getPinkwertherTracking();
 	
 	public PinkwertherSupport getPinkwertherSupport();
 	

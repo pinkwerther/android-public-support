@@ -10,8 +10,6 @@ import com.pinkwerther.support.ads.PinkwertherAds;
 import com.pinkwerther.support.fragment.PinkwertherSubstantialFragment;
 import com.pinkwerther.support.license.PinkwertherLicenseInterface;
 import com.pinkwerther.support.resources.PinkwertherResourceManager;
-import com.pinkwerther.support.tracking.PinkwertherShellTracking;
-import com.pinkwerther.support.tracking.PinkwertherTrackingInterface;
 
 public class PinkwertherFragmentActivity extends FragmentActivity implements PinkwertherActivityInterface {
 
@@ -68,11 +66,6 @@ public class PinkwertherFragmentActivity extends FragmentActivity implements Pin
 	public PinkwertherLicenseInterface getPinkwertherLicense() {
 		//TODO
 		return null;
-	}
-
-	@Override
-	public PinkwertherTrackingInterface getPinkwertherTracking() {
-		return new PinkwertherShellTracking();
 	}
 
 	@Override
